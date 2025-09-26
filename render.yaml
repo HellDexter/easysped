@@ -6,6 +6,7 @@ services:
       pip install -r requirements.txt
       python manage.py collectstatic --no-input
       python manage.py migrate
+      python manage.py create_superuser_on_deploy
     startCommand: "gunicorn spedice_project.wsgi:application"
     envVars:
       - key: DATABASE_URL
