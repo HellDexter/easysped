@@ -17,7 +17,8 @@ services:
       - key: WEB_CONCURRENCY
         value: 4
 
-  - type: pserv
-    name: easysped-db
-    env: postgres
-    plan: free # Můžete změnit na placený plán pro lepší výkon
+databases:
+  - name: easysped-db
+    databaseName: easysped_db
+    user: easysped_user
+    plan: free
