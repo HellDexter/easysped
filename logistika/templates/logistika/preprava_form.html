@@ -1,0 +1,75 @@
+{% extends 'logistika/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+    <hr>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Základní informace</div>
+                    <div class="card-body">
+                        <div class="mb-3">{{ form.zakaznik.label_tag }} {{ form.zakaznik }} {% for error in form.zakaznik.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.typ_vozidla.label_tag }} {{ form.typ_vozidla }} {% for error in form.typ_vozidla.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.popis_zbozi.label_tag }} {{ form.popis_zbozi }} {% for error in form.popis_zbozi.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">Finance</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            {{ form.odhadovana_hmotnost_kg.label_tag }}
+                            <div class="input-group">
+                                {{ form.odhadovana_hmotnost_kg }}
+                                {{ form.poznamka_odhad_hmotnost }}
+                            </div>
+                            {% for error in form.odhadovana_hmotnost_kg.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            {% for error in form.poznamka_odhad_hmotnost.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.finalni_hmotnost_kg.label_tag }}
+                            <div class="input-group">
+                                {{ form.finalni_hmotnost_kg }}
+                                {{ form.poznamka_final_hmotnost }}
+                            </div>
+                            {% for error in form.finalni_hmotnost_kg.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                            {% for error in form.poznamka_final_hmotnost.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-9">{{ form.cena_za_tunu_zakaznik.label_tag }} {{ form.cena_za_tunu_zakaznik }} {% for error in form.cena_za_tunu_zakaznik.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                            <div class="col-3">{{ form.mena_zakaznik.label_tag }} {{ form.mena_zakaznik }} {% for error in form.mena_zakaznik.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-9">{{ form.naklad_za_tunu_dopravce.label_tag }} {{ form.naklad_za_tunu_dopravce }} {% for error in form.naklad_za_tunu_dopravce.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                            <div class="col-3">{{ form.mena_dopravce.label_tag }} {{ form.mena_dopravce }} {% for error in form.mena_dopravce.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Logistika</div>
+                    <div class="card-body">
+                        <div class="mb-3">{{ form.misto_nakladky.label_tag }} {{ form.misto_nakladky }} {% for error in form.misto_nakladky.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.datum_cas_nakladky.label_tag }} {{ form.datum_cas_nakladky }} {% for error in form.datum_cas_nakladky.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <hr>
+                        <div class="mb-3">{{ form.misto_vykladky.label_tag }} {{ form.misto_vykladky }} {% for error in form.misto_vykladky.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.datum_cas_vykladky.label_tag }} {{ form.datum_cas_vykladky }} {% for error in form.datum_cas_vykladky.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <hr>
+                        <div class="mb-3">{{ form.odesilatel_cmr.label_tag }} {{ form.odesilatel_cmr }} {% for error in form.odesilatel_cmr.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.prijemce_cmr.label_tag }} {{ form.prijemce_cmr }} {% for error in form.prijemce_cmr.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Uložit</button>
+        <a href="{% url 'seznam_preprav' %}" class="btn btn-secondary">Zpět</a>
+    </form>
+{% endblock %}

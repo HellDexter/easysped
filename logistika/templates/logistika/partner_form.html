@@ -1,0 +1,52 @@
+{% extends 'logistika/base.html' %}
+
+{% block title %}{{ title }} - EasySped{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+    <hr>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Základní údaje</div>
+                    <div class="card-body">
+                        <div class="mb-3">{{ form.nazev.label_tag }} {{ form.nazev }} {% for error in form.nazev.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.ic.label_tag }} {{ form.ic }} {% for error in form.ic.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.dic.label_tag }} {{ form.dic }} {% for error in form.dic.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.adresa.label_tag }} {{ form.adresa }} {% for error in form.adresa.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.typ_partnera.label_tag }} {{ form.typ_partnera }} {% for error in form.typ_partnera.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Kontaktní údaje</div>
+                    <div class="card-body">
+                        <div class="mb-3">{{ form.kontaktni_osoba.label_tag }} {{ form.kontaktni_osoba }} {% for error in form.kontaktni_osoba.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.email.label_tag }} {{ form.email }} {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.telefon.label_tag }} {{ form.telefon }} {% for error in form.telefon.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                        <div class="mb-3">{{ form.dalsi_kontakty.label_tag }} {{ form.dalsi_kontakty }} {% for error in form.dalsi_kontakty.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">Doplňující informace (pro dopravce)</div>
+            <div class="card-body">
+                <div class="mb-3">{{ form.certifikace.label_tag }} {{ form.certifikace }} {% for error in form.certifikace.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="mb-3">{{ form.typy_vozidel.label_tag }} {{ form.typy_vozidel }} {% for error in form.typy_vozidel.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="mb-3">{{ form.fakturacni_udaje.label_tag }} {{ form.fakturacni_udaje }} {% for error in form.fakturacni_udaje.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="mb-3">{{ form.splatnost_faktur_dny.label_tag }} {{ form.splatnost_faktur_dny }} {% for error in form.splatnost_faktur_dny.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Uložit</button>
+        <a href="javascript:history.back()" class="btn btn-secondary">Zpět</a>
+    </form>
+
+{% endblock %}

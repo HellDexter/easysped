@@ -1,0 +1,211 @@
+body {
+    padding-left: 280px; /* Šířka sidebaru */
+}
+
+.sidebar {
+    width: 280px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 16px 18px;
+    background-color: #212529;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+
+.sidebar-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.9rem;
+}
+
+.sidebar .navbar-brand {
+    display: inline-block;
+    margin-bottom: 0.25rem;
+    font-size: 1.35rem;
+}
+
+.sidebar-header #live-datetime {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.sidebar-holidays {
+    border-top: 1px solid #3a3f44;
+    padding-top: 0.7rem;
+}
+
+.sidebar-holiday-list li {
+    margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+}
+
+.sidebar-holiday-list .holiday-date {
+    display: block;
+    font-weight: 600;
+    color: #ffc107;
+}
+
+.sidebar-holiday-list .holiday-name {
+    display: block;
+    line-height: 1.1;
+}
+
+.sidebar-holiday-list .holiday-meta {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar-holidays-link {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+}
+
+.sidebar-holidays-link:hover {
+    color: #ffc107;
+    text-decoration: underline;
+}
+
+.developer-note {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.developer-note a {
+    color: inherit;
+}
+
+.developer-note a:hover {
+    color: #ffc107;
+}
+
+.sidebar .navbar-nav {
+    flex-direction: column !important; /* Vynutí vertikální uspořádání */
+    width: 100%;
+}
+
+.sidebar .nav-item {
+    width: 100%;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.55rem 0.85rem;
+    border-radius: 0.3rem;
+    font-size: 0.95rem;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    color: white;
+    background-color: #343a40;
+}
+
+.main-content {
+    width: 100%;
+}
+
+/* Kalkulačka */
+.calculator {
+    margin-top: 0.75rem;
+    padding-top: 16px;
+    border-top: 1px solid #3a3f44;
+}
+
+.calculator-screen {
+    width: 100%;
+    background-color: #495057;
+    border: none;
+    color: white;
+    text-align: right;
+    padding: 8px;
+    font-size: 1.35rem;
+    margin-bottom: 8px;
+}
+
+.calculator-keys {
+    display: grid;
+    grid-gap: 4px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-areas:
+        "ac percent divide multiply"
+        "seven eight nine subtract"
+        "four five six add"
+        "one two three equals"
+        "zero zero decimal equals";
+}
+
+
+.calculator-keys [data-area="ac"] { grid-area: ac; }
+.calculator-keys [data-area="percent"] { grid-area: percent; }
+.calculator-keys [data-area="divide"] { grid-area: divide; }
+.calculator-keys [data-area="multiply"] { grid-area: multiply; }
+.calculator-keys [data-area="subtract"] { grid-area: subtract; }
+.calculator-keys [data-area="seven"] { grid-area: seven; }
+.calculator-keys [data-area="eight"] { grid-area: eight; }
+.calculator-keys [data-area="nine"] { grid-area: nine; }
+.calculator-keys [data-area="add"] { grid-area: add; }
+.calculator-keys [data-area="four"] { grid-area: four; }
+.calculator-keys [data-area="five"] { grid-area: five; }
+.calculator-keys [data-area="six"] { grid-area: six; }
+.calculator-keys [data-area="one"] { grid-area: one; }
+.calculator-keys [data-area="two"] { grid-area: two; }
+.calculator-keys [data-area="three"] { grid-area: three; }
+.calculator-keys [data-area="equals"] { grid-area: equals; }
+.calculator-keys [data-area="zero"] { grid-area: zero; }
+.calculator-keys [data-area="decimal"] { grid-area: decimal; }
+
+.calculator-keys button {
+    background-color: #495057;
+    border: none;
+    color: white;
+    padding: 12px 0;
+    border-radius: 4px;
+}
+
+.calculator-keys button.operator {
+    background-color: #ff9f0a;
+}
+
+.calculator-keys button.is-depressed {
+    background-color: #f1c40f; /* Jasnější barva pro zvýraznění */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+}
+
+.calculator-keys button.clear {
+    background-color: #6c757d;
+}
+/* Clickable table rows */
+.clickable-row:hover {
+    background-color: #f2f2f2; /* Light grey background on hover */
+    cursor: pointer;
+}
+
+.sidebar-footer {
+    padding-top: 1rem;
+    margin-top: auto; /* Posune patičku na úplný spodek */
+    border-top: 1px solid #3a3f44;
+}
+
+.user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.user-info .username strong {
+    color: #ffc107;
+}

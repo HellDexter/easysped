@@ -1,0 +1,13 @@
+{% extends 'logistika/base.html' %}
+
+{% block title %}{{ title }} - EasySped{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+    <hr>
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Uložit</button>
+    </form>
+{% endblock %}

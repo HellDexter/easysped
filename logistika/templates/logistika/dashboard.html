@@ -1,0 +1,117 @@
+{% extends 'logistika/base.html' %}
+{% load l10n %}
+
+{% block title %}Dashboard - EasySped{% endblock %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    <hr>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Nové / Nepřiřazené</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ nove }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Naplánované</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ planovane }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Probíhající</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ probihajici }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">K fakturaci</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ k_fakturaci }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Marže</div>
+                <div class="card-body">
+                    <p><strong>Dnes:</strong> {{ marze_den_czk|floatformat:2 }} Kč / {{ marze_den_eur|floatformat:2 }} €</p>
+                    <p><strong>Tento týden:</strong> {{ marze_tyden_czk|floatformat:2 }} Kč / {{ marze_tyden_eur|floatformat:2 }} €</p>
+                    <p><strong>Tento měsíc:</strong> {{ marze_mesic_czk|floatformat:2 }} Kč / {{ marze_mesic_eur|floatformat:2 }} €</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Nejlepší zákazníci</div>
+                <ul class="list-group list-group-flush">
+                    {% for partner in nejlepsi_zakaznici %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ partner.nazev }}
+                            <span class="badge bg-primary rounded-pill">{{ partner.pocet_preprav }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">Žádná data.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Nejlepší dopravci</div>
+                <ul class="list-group list-group-flush">
+                    {% for partner in nejlepsi_dopravci %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ partner.nazev }}
+                            <span class="badge bg-success rounded-pill">{{ partner.pocet_preprav }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">Žádná data.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2>Poslední realizované přepravy</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ref. číslo</th>
+                <th>Zákazník</th>
+                <th>Datum nakládky</th>
+                <th>Nakládka</th>
+                <th>Vykládka</th>
+                <th>Stav</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for preprava in posledni_realizovane %}
+            <tr class="clickable-row" data-href="{% url 'preprava_detail' preprava.pk %}">
+                <td>{{ preprava.referencni_cislo }}</td>
+                <td>{{ preprava.zakaznik.nazev }}</td>
+                <td>{{ preprava.datum_cas_nakladky }}</td>
+                <td>{{ preprava.misto_nakladky }}</td>
+                <td>{{ preprava.misto_vykladky }}</td>
+                <td><span class="badge {{ preprava.get_stav_badge_class }}">{{ preprava.get_stav_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">Žádné realizované přepravy.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

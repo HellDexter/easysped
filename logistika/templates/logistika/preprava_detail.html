@@ -1,0 +1,109 @@
+{% extends 'logistika/base.html' %}
+
+{% block title %}Detail přepravy {{ preprava.referencni_cislo }} - EasySped{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Detail přepravy: {{ preprava.referencni_cislo }}</h1>
+        <a href="{% url 'preprava_update' preprava.pk %}" class="btn btn-warning">Upravit přepravu</a>
+    </div>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Informace o přepravě
+                </div>
+                <div class="card-body">
+                    <p><strong>Zákazník:</strong> {{ preprava.zakaznik.nazev }}</p>
+                    <p><strong>Dopravce:</strong> {{ preprava.dopravce.nazev|default:"Není přiřazen" }}</p>
+                    <p><strong>Stav:</strong> <span class="badge {{ preprava.get_stav_badge_class }}">{{ preprava.get_stav_display }}</span></p>
+                    <hr>
+                    <p><strong>Nakládka:</strong> {{ preprava.misto_nakladky }} ({{ preprava.datum_cas_nakladky }})</p>
+                    <p><strong>Vykládka:</strong> {{ preprava.misto_vykladky }} ({{ preprava.datum_cas_vykladky }})</p>
+                    <hr>
+                    <p><strong>Odesílatel CMR:</strong> {{ preprava.odesilatel_cmr|default:"-" }}</p>
+                    <p><strong>Příjemce CMR:</strong> {{ preprava.prijemce_cmr|default:"-" }}</p>
+                    <hr>
+                    <p><strong>Typ vozidla:</strong> {{ preprava.get_typ_vozidla_display }}</p>
+                    <p><strong>Popis zboží:</strong> {{ preprava.popis_zbozi }}</p>
+                    <hr>
+                    <p><strong>Odhadovaná hmotnost:</strong> {{ preprava.odhadovana_hmotnost_kg }} kg {% if preprava.poznamka_odhad_hmotnost %}<small class="text-muted">({{ preprava.poznamka_odhad_hmotnost }})</small>{% endif %}</p>
+                    <p><strong>Finální hmotnost:</strong> {{ preprava.finalni_hmotnost_kg|default:"-" }} kg {% if preprava.poznamka_final_hmotnost %}<small class="text-muted">({{ preprava.poznamka_final_hmotnost }})</small>{% endif %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Finance
+                </div>
+                <div class="card-body">
+                    <p><strong>Cena za tunu (zákazník):</strong> {{ preprava.cena_za_tunu_zakaznik }} {{ preprava.get_mena_zakaznik_display }}/t</p>
+                    <p><strong>Náklad za tunu (dopravce):</strong> {{ preprava.naklad_za_tunu_dopravce|default:"-" }} {{ preprava.get_mena_dopravce_display }}/t</p>
+                    <hr>
+                    <p><strong>Celková cena pro zákazníka:</strong> {{ preprava.celkova_cena_zakaznik|floatformat:2 }} {{ preprava.get_mena_zakaznik_display }}</p>
+                    <p><strong>Celkový náklad pro dopravce:</strong> {{ preprava.celkovy_naklad_dopravce|floatformat:2 }} {{ preprava.get_mena_dopravce_display }}</p>
+                    <hr>
+                    <h5 class="card-title">Marže: {{ preprava.marze|floatformat:2 }} {% if preprava.mena_zakaznik == preprava.mena_dopravce %}{{ preprava.get_mena_zakaznik_display }}{% else %}mix měn{% endif %}</h5>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">Akce</div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ dopravce_form.as_p }}
+                        <button type="submit" name="assign_dopravce" class="btn btn-info btn-sm">Uložit dopravce</button>
+                    </form>
+                    <hr>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ stav_form.as_p }}
+                        <button type="submit" name="change_stav" class="btn btn-warning btn-sm">Změnit stav</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-header">Dokumenty</div>
+        <div class="card-body">
+            <ul class="list-group mb-3">
+                {% for doc in preprava.dokumenty.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{{ doc.soubor.url }}" target="_blank">{{ doc.nazev }}</a>
+                            <small class="text-muted">({{ doc.datum_nahrani|date:"d.m.Y" }})</small>
+                        </div>
+                        <form method="post" action="{% url 'dokument_delete' doc.pk %}" onsubmit="return confirm('Opravdu si přejete smazat tento dokument?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Smazat</button>
+                        </form>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">Zatím nebyly nahrány žádné dokumenty.</li>
+                {% endfor %}
+            </ul>
+            <hr>
+            <h5>Nahrát nový dokument</h5>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ dokument_form.as_p }}
+                <button type="submit" name="upload_dokument" class="btn btn-success btn-sm">Nahrát</button>
+            </form>
+        </div>
+    </div>
+
+    <a href="{% url 'seznam_preprav' %}" class="btn btn-secondary mt-3">Zpět na seznam</a>
+    <form method="post" action="{% url 'preprava_delete' preprava.pk %}" onsubmit="return confirm('Opravdu si přejete smazat tuto přepravu?');" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger mt-3">Smazat přepravu</button>
+    </form>
+    {% if preprava.dopravce %}
+        <a href="{% url 'podklady_pdf' preprava.pk %}" class="btn btn-info mt-3">Generovat podklady (PDF)</a>
+    {% endif %}
+{% endblock %}
