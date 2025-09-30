@@ -162,7 +162,7 @@ if 'RENDER' in os.environ:
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     AWS_S3_FILE_OVERWRITE = False
-
+    AWS_S3_VERIFY = False # Nový řádek
 
 
 if 'RENDER' in os.environ:
