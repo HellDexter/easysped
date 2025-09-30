@@ -167,6 +167,7 @@ if 'RENDER' in os.environ:
 
 if 'RENDER' in os.environ:
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+    MEDIA_ROOT = BASE_DIR / 'media_temp' # Dočasný adresář pro nahrávání
 else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
