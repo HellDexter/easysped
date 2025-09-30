@@ -91,7 +91,7 @@ Kroky:
 
 ## Statická a uživatelská data v produkci
 - **Statická aktiva**: obsluhuje WhiteNoise; spouští se `collectstatic` do `staticfiles/`.
-- **Uživatelská média (media/)**: Render má dočasné FS – nahrané soubory se při redeploy/resetu smažou. Pro trvalé ukládání doporučujeme S3/Cloud Storage (TODO).
+- **Uživatelská média (media/)**: Produkční prostředí je nakonfigurováno pro ukládání souborů do Amazon S3 bucketu pro zajištění trvalého úložiště.
 
 ---
 
@@ -131,6 +131,130 @@ python manage.py loaddata datadump.json
 - `DATABASE_URL` – připojení k PostgreSQL (Render doplní automaticky).
 - `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_PASSWORD`, `DJANGO_SUPERUSER_EMAIL` (volitelně) – pro automatické vytvoření superusera při deployi.
 - `RENDER_EXTERNAL_HOSTNAME` – Render přidá, používá se do `ALLOWED_HOSTS`.
+- `AWS_STORAGE_BUCKET_NAME` – Název vašeho S3 bucketu.
+- `AWS_S3_REGION_NAME` – Region vašeho S3 bucketu (např. `eu-north-1`).
+- `AWS_ACCESS_KEY_ID` – Přístupový klíč pro IAM uživatele.
+- `AWS_SECRET_ACCESS_KEY` – Tajný klíč pro IAM uživatele.
+- `DJANGO_DEBUG` – Nastaveno na `False` v produkci.
+
+---
+
+## Nastavení Amazon S3 pro ukládání souborů
+
+Aplikace je nakonfigurována pro ukládání uživatelských souborů (média) na Amazon S3. Pro zprovoznění je nutné provést následující kroky v AWS a na Renderu.
+
+### 1. Vytvoření S3 Bucketu
+1. V AWS konzoli jděte do služby **S3**.
+2. Vytvořte nový bucket (např. `easysped-media-12345`).
+3. **Region**: Vyberte region, který je vám nejblíže (např. `eu-north-1` pro Stockholm).
+4. V sekci **Block Public Access settings for this bucket** odškrtněte **"Block all public access"** a potvrďte.
+
+### 2. Vytvoření IAM uživatele a politiky
+Pro bezpečný přístup k S3 je doporučeno vytvořit specializovaného uživatele.
+
+1. **Vytvoření politiky oprávnění:**
+   - V AWS jděte do **IAM -> Policies -> Create policy**.
+   - Přepněte na záložku **JSON** a vložte následující kód (nahraďte `NAZEV-VASEHO-BUCKETU` skutečným názvem):
+     ```json
+     {
+         "Version": "2012-10-17",
+         "Statement": [
+             {
+                 "Sid": "AllowS3Management",
+                 "Effect": "Allow",
+                 "Action": [
+                     "s3:GetObject",
+                     "s3:PutObject",
+                     "s3:PutObjectAcl",
+                     "s3:DeleteObject",
+                     "s3:ListBucket",
+                     "s3:GetBucketLocation"
+                 ],
+                 "Resource": [
+                     "arn:aws:s3:::NAZEV-VASEHO-BUCKETU/*",
+                     "arn:aws:s3:::NAZEV-VASEHO-BUCKETU"
+                 ]
+             }
+         ]
+     }
+     ```
+   - Pojmenujte politiku (např. `EasySpedS3AccessPolicy`) a vytvořte ji.
+
+2. **Vytvoření uživatele:**
+   - V **IAM -> Users -> Create user**.
+   - Zadejte jméno (např. `easysped-app-user`) a pokračujte.
+   - Zvolte **"Attach policies directly"** a vyberte politiku `EasySpedS3AccessPolicy`, kterou jste právě vytvořili.
+   - Dokončete vytvoření uživatele.
+
+3. **Generování přístupových klíčů:**
+   - Po vytvoření uživatele přejděte do jeho detailu, na záložku **"Security credentials"**.
+   - V sekci **"Access keys"** klikněte na **"Create access key"**.
+   - Jako "Use case" vyberte **"Application running on an AWS compute service"**.
+   - Zkopírujte si zobrazený **Access key ID** a **Secret access key**.
+
+### 3. Nastavení Bucket Policy a CORS
+1. **Bucket Policy:**
+   - Vraťte se do S3, vyberte váš bucket -> **Permissions -> Bucket policy -> Edit**.
+   - Vložte následující JSON (opět nahraďte `NAZEV-VASEHO-BUCKETU` a `VASE-AWS-ACCOUNT-ID`):
+     ```json
+     {
+         "Version": "2012-10-17",
+         "Statement": [
+             {
+                 "Sid": "PublicReadGetObject",
+                 "Effect": "Allow",
+                 "Principal": "*",
+                 "Action": "s3:GetObject",
+                 "Resource": "arn:aws:s3:::NAZEV-VASEHO-BUCKETU/*"
+             },
+             {
+                 "Sid": "AllowWriteForApp",
+                 "Effect": "Allow",
+                 "Principal": {
+                     "AWS": "arn:aws:iam::VASE-AWS-ACCOUNT-ID:user/easysped-app-user"
+                 },
+                 "Action": [
+                     "s3:PutObject",
+                     "s3:PutObjectAcl",
+                     "s3:DeleteObject"
+                 ],
+                 "Resource": "arn:aws:s3:::NAZEV-VASEHO-BUCKETU/*"
+             }
+         ]
+     }
+     ```
+
+2. **CORS Configuration:**
+   - Ve stejné sekci sjeďte níže k **"Cross-origin resource sharing (CORS)" -> Edit**.
+   - Vložte následující JSON (nahraďte `https://vas-render-hostname.onrender.com` vaší skutečnou URL):
+     ```json
+     [
+         {
+             "AllowedHeaders": [
+                 "*"
+             ],
+             "AllowedMethods": [
+                 "GET",
+                 "PUT",
+                 "POST",
+                 "DELETE"
+             ],
+             "AllowedOrigins": [
+                 "https://vas-render-hostname.onrender.com"
+             ],
+             "ExposeHeaders": []
+         }
+     ]
+     ```
+
+### 4. Nastavení proměnných na Renderu
+- V "Environment" vaší služby na Renderu přidejte/aktualizujte následující proměnné:
+  - `AWS_STORAGE_BUCKET_NAME`: Název vašeho S3 bucketu.
+  - `AWS_S3_REGION_NAME`: Region vašeho S3 bucketu.
+  - `AWS_ACCESS_KEY_ID`: Nově vygenerovaný Access key.
+  - `AWS_SECRET_ACCESS_KEY`: Nově vygenerovaný Secret key.
+
+Po uložení proměnných se aplikace restartuje a měla by být schopna ukládat soubory na S3.
 
 ---
 
