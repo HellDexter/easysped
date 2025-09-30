@@ -74,9 +74,9 @@ class Preprava(models.Model):
     datum_cas_vykladky = models.CharField(max_length=50, verbose_name="Datum a čas vykládky")
     odesilatel_cmr = models.TextField(blank=True, verbose_name="Odesílatel CMR")
     prijemce_cmr = models.TextField(blank=True, verbose_name="Příjemce CMR")
-    typ_vozidla = models.CharField(max_length=6, choices=TYP_VOZIDLA_CHOICES, default='SKL')
     popis_zbozi = models.TextField()
-    odhadovana_hmotnost_kg = models.IntegerField(default=24000, verbose_name="Odhadovaná hmotnost (kg)")
+    typ_vozidla = models.CharField(max_length=10, choices=TYP_VOZIDLA_CHOICES, default='SKL', verbose_name="Typ vozidla")
+    odhadovana_hmotnost_kg = models.IntegerField(default=25000, verbose_name="Odhadovaná hmotnost (kg)")
     poznamka_odhad_hmotnost = models.CharField(max_length=255, blank=True, verbose_name="Poznámka k odhad. hmotnosti")
     finalni_hmotnost_kg = models.IntegerField(null=True, blank=True, verbose_name="Finální hmotnost (kg)")
     poznamka_final_hmotnost = models.CharField(max_length=255, blank=True, verbose_name="Poznámka k finální hmotnosti")
@@ -86,7 +86,6 @@ class Preprava(models.Model):
     mena_dopravce = models.CharField(max_length=3, choices=MENA_CHOICES, default='CZK', verbose_name="Měna (dopravce)")
     stav = models.CharField(max_length=20, choices=STAV_CHOICES, default='nova')
     datum_vytvoreni = models.DateTimeField(auto_now_add=True)
-
     @property
     def celkova_cena_zakaznik(self):
         hmotnost_t = (self.finalni_hmotnost_kg or self.odhadovana_hmotnost_kg) / 1000
