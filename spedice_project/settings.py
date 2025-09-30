@@ -24,8 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-1k4l*j1zqci3_*c1#+*fr0sr*0#3*zjcxm7zgw@z^bn(-(g!ql)')
 
-# V produkci bude DEBUG=False, pokud je přítomna proměnná prostředí RENDER
-DEBUG = 'RENDER' not in os.environ
+# DEBUG se řídí proměnnou prostředí DJANGO_DEBUG, s bezpečným výchozím nastavením pro produkci.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = []
 
